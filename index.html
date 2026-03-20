@@ -2,192 +2,152 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>TERMINAL STRATTON OAKMONT - ACCESO RESTRINGIDO</title>
+    <title>STRATTON OAKMONT - TERMINAL DE RECOMPENSAS</title>
     <style>
         :root {
-            --green: #00ff41; --gold: #ffd700; --bg: #0a0a0a;
-            --panel-bg: rgba(0, 40, 0, 0.3); --font: 'Courier New', Courier, monospace;
+            --green: #00ff41; --gold: #ffd700; --bg: #050505;
+            --panel-bg: rgba(0, 30, 0, 0.6); --font: 'Courier New', monospace;
         }
-
         body {
             background-color: var(--bg); color: var(--green); font-family: var(--font);
             margin: 0; height: 100vh; display: grid;
-            grid-template-columns: 250px 1fr 250px; grid-template-rows: 1fr 1fr 60px;
+            grid-template-columns: 300px 1fr 300px; grid-template-rows: 1fr 1fr 70px;
             text-transform: uppercase; overflow: hidden;
         }
-
-        /* ESTÉTICA DE TERMINAL CRT */
+        .panel { background: var(--panel-bg); border: 1px solid var(--green); padding: 15px; display: flex; flex-direction: column; gap: 10px; }
+        .panel-title { color: var(--gold); border-bottom: 2px solid var(--green); padding-bottom: 5px; font-weight: bold; text-align: center; }
+        
         #main-terminal {
-            grid-column: 2; grid-row: 1 / 3; border: 3px solid var(--green);
-            margin: 20px; padding: 30px; position: relative;
-            background: radial-gradient(circle, #0c200c 0%, #050a05 100%);
-            box-shadow: inset 0 0 100px rgba(0,255,65,0.2), 0 0 20px rgba(0,255,65,0.4);
+            grid-column: 2; grid-row: 1 / 3; border: 4px solid var(--green);
+            padding: 30px; background: rgba(0,0,0,0.9); position: relative;
+            box-shadow: inset 0 0 50px rgba(0,255,65,0.2); display: flex; flex-direction: column;
         }
-
-        .scanline {
-            width: 100%; height: 2px; background: rgba(0, 255, 65, 0.1);
-            position: absolute; animation: scan 4s linear infinite; z-index: 10;
+        
+        .reward-badge { 
+            background: var(--gold); color: black; padding: 5px 10px; 
+            font-weight: bold; border-radius: 3px; display: inline-block; margin-bottom: 10px;
+            animation: pulse 2s infinite;
         }
-        @keyframes scan { from { top: 0; } to { top: 100%; } }
+        @keyframes pulse { 0% { opacity: 0.7; } 50% { opacity: 1; } 100% { opacity: 0.7; } }
 
-        /* PANELES DECORATIVOS (INMERSIÓN) */
-        .panel { background: var(--panel-bg); border: 1px solid var(--green); margin: 10px; padding: 10px; font-size: 0.75rem; }
-        .ticker { grid-column: 1 / 4; grid-row: 3; background: #000; display: flex; align-items: center; overflow: hidden; border-top: 2px solid var(--green); }
-        .ticker-text { white-space: nowrap; animation: scroll 20s linear infinite; color: var(--gold); }
-        @keyframes scroll { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
-
-        /* ELEMENTOS DEL JUEGO */
-        .level-content { display: none; }
+        .game-content { display: none; }
         .active { display: block; }
-        .highlight { color: #fff; text-shadow: 0 0 5px var(--green); font-weight: bold; }
         
-        input {
-            background: transparent; border: none; border-bottom: 2px solid var(--green);
-            color: var(--gold); font-family: var(--font); font-size: 1.8rem;
-            width: 100%; text-align: center; outline: none; margin: 20px 0;
-        }
-        
-        button {
-            background: var(--green); color: #000; border: none; padding: 15px;
-            width: 100%; font-weight: bold; font-size: 1.2rem; cursor: pointer;
-            transition: 0.2s; box-shadow: 0 5px 0 #00641a;
-        }
-        button:hover { background: var(--gold); box-shadow: 0 5px 0 #bfa300; }
-        button:active { transform: translateY(4px); box-shadow: 0 1px 0 #bfa300; }
+        input { background: transparent; border: none; border-bottom: 3px solid var(--green); color: var(--gold); font-size: 2.5rem; width: 100%; text-align: center; outline: none; margin: 20px 0; }
+        button { background: var(--green); color: black; border: none; padding: 15px; font-size: 1.3rem; font-weight: bold; cursor: pointer; width: 100%; }
+        button:hover { background: var(--gold); }
 
-        #feedback { margin-top: 20px; font-weight: bold; text-align: center; min-height: 50px; }
-        .success { color: var(--gold); }
-        .error { color: #ff3333; }
+        .inventory-item { color: #fff; font-size: 0.8rem; margin-bottom: 5px; opacity: 0.3; }
+        .inventory-item.earned { color: var(--gold); opacity: 1; font-weight: bold; }
+
+        #ticker { grid-column: 1 / 4; grid-row: 3; background: #000; border-top: 2px solid var(--green); overflow: hidden; display: flex; align-items: center; color: var(--gold); }
+        .ticker-move { animation: move 25s linear infinite; white-space: nowrap; }
+        @keyframes move { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
     </style>
 </head>
 <body>
 
-    <div class="scanline"></div>
+    <div class="panel">
+        <div class="panel-title">MOCHILA DEL LOBO</div>
+        <div id="p-tel" class="inventory-item">📞 TELÉFONO DE BRONCE (+5%)</div>
+        <div id="p-pin" class="inventory-item">📌 PIN DE STRATTON</div>
+        <div id="p-calc" class="inventory-item">📟 CALCULADORA DE ORO</div>
+        <div id="p-heli" class="inventory-item">🚁 ACCESO AL HELIPUERTO</div>
+        <hr style="border:1px solid var(--green); width:100%">
+        <div style="color:var(--gold)">COMISIONES: <span id="money">$0</span></div>
+    </div>
 
-    <aside style="grid-column: 1; grid-row: 1/3;">
-        <div class="panel">
-            <div style="color:var(--gold)">ESTADO DE CUENTA</div>
-            <div id="balance">$0.00</div>
-            <div style="margin-top:10px;">RANGO: <span id="rank">APRENDIZ</span></div>
-        </div>
-        <div class="panel">
-            <div>NASDAQ: 18,210 <span style="color:var(--green)">▲</span></div>
-            <div>DOW J: 39,120 <span style="color:red">▼</span></div>
-        </div>
-    </aside>
-
-    <main id="main-terminal">
-        <div style="display:flex; justify-content: space-between; border-bottom: 1px solid var(--green); padding-bottom: 5px; margin-bottom: 20px;">
-            <span>SISTEMA: V0.1-ALPHA</span>
+    <div id="main-terminal">
+        <div style="display:flex; justify-content: space-between; margin-bottom: 15px;">
+            <span id="rank-tag">RANGO: NOVATO</span>
             <span id="timer" style="color:var(--gold)">TIEMPO: 02:00</span>
         </div>
 
-        <div id="lvl1" class="level-content active">
-            <h2>> INICIANDO TRANSMISIÓN...</h2>
-            <h3>NIVEL 1: THE COLD CALL</h3>
-            <p>ESCUCHA BIEN, <span class="highlight">NOVATO</span>. TENEMOS AL <span class="highlight">SR. BELFORT SENIOR</span> EN LA LÍNEA. ES UN PEZ GORDO.</p>
-            <p>TU MISIÓN ES SENCILLA: CONVENCERLO DE INVERTIR <span class="highlight">$1,000,000</span> EN UNA CUENTA QUE PAGA EL <span class="highlight">1% SIMPLE MENSUAL</span>.</p>
-            <p>¿CUÁNTO RECIBIRÁ DE <span class="highlight">INTERÉS</span> TRAS <span class="highlight">8 MESES</span>? NO METAS LA PATA, O TE PATEARÉ EL TRASERO.</p>
-            <input type="number" id="input1" placeholder="INGRESA EL MONTO" autocomplete="off">
-            <button onclick="checkAnswer(1)">CERRAR VENTA</button>
+        <div id="lvl1" class="game-content active">
+            <div class="reward-badge">🎯 PREMIO: TELÉFONO DE BRONCE</div>
+            <h2>> NIVEL 1: THE COLD CALL</h2>
+            <p>INVIERTE <span style="color:#fff">$1,000,000</span> AL <span style="color:#fff">1% SIMPLE MENSUAL</span>[cite: 5].</p>
+            <p>DIME EL INTERÉS TRAS <span style="color:#fff">8 MESES</span>[cite: 6].</p>
+            <p style="font-size: 0.8rem; color: var(--gold);">⚠️ INCENTIVO: CIERRA EN MENOS DE 2 MIN PARA BONO DEL 5%.</p>
+            <input type="number" id="ans1" placeholder="RESULTADO">
+            <button onclick="valida(1)">LIQUIDAR COMISIÓN</button>
+            <div id="feed1" style="margin-top:20px; text-align:center;"></div>
         </div>
 
-        <div id="lvl2" class="level-content">
-            <h3>NIVEL 2: EL NEGOCIADOR DE PAGARÉS</h3>
-            <p>¡NADA MAL! PERO AHORA VIENE LO REAL. UN CLIENTE NECESITA LIQUIDEZ Y TRAE UN PAGARÉ DE <span class="highlight">$2,000,000</span> QUE VENCE EN <span class="highlight">8 MESES</span>.</p>
-            <p>CALCULA EL <span class="highlight">DESCUENTO RACIONAL</span> CON UNA TASA DEL <span class="highlight">15% ANUAL</span>.</p>
-            <p>¿CUÁNTO DINERO EFECTIVO LE ENTREGARÁS? ¡HAZLO RÁPIDO O PIERDO LA COMISIÓN!</p>
-            <input type="number" id="input2" placeholder="0.00" autocomplete="off">
-            <button onclick="checkAnswer(2)">LIQUIDAR PAGARÉ</button>
+        <div id="lvl2" class="game-content">
+            <div class="reward-badge">🎯 PREMIO: PIN DE STRATTON OAKMONT</div>
+            <h2>> NIVEL 2: EL NEGOCIADOR</h2>
+            <p>PAGARÉ DE <span style="color:#fff">$2,000,000</span> A <span style="color:#fff">8 MESES</span>[cite: 10].</p>
+            <p>TASA: <span style="color:#fff">15% ANUAL</span>. CALCULA EL <span style="color:#fff">DESCUENTO RACIONAL</span>[cite: 11].</p>
+            <p style="font-size: 0.8rem; color: var(--gold);">⚠️ PREMIO: VER FÓRMULA DEL SIGUIENTE NIVEL POR 10 SEG[cite: 13].</p>
+            <input type="number" id="ans2" placeholder="0.00">
+            <button onclick="valida(2)">OBTENER LIQUIDEZ</button>
+            <div id="feed2" style="margin-top:20px; text-align:center;"></div>
         </div>
+    </div>
 
-        <div id="feedback"></div>
-    </main>
+    <div class="panel">
+        <div class="panel-title">MANUAL DEL LOBO [cite: 36]</div>
+        <p style="font-size:0.7rem;">EL USO DE PISTAS REDUCE TUS PUNTOS DE PRESTIGIO[cite: 33].</p>
+        <button onclick="alert('Pista Nivel 1: I = P * i * n')" style="font-size:0.7rem; padding:5px;">VER PISTA [cite: 7]</button>
+    </div>
 
-    <aside style="grid-column: 3; grid-row: 1/3;">
-        <div class="panel">
-            <div style="color:var(--gold)">ORDENES PENDIENTES</div>
-            <div>STRATTON: BUY</div>
-            <div>AERO: SELL</div>
-        </div>
-    </aside>
-
-    <footer class="ticker">
-        <div class="ticker-text">
-            *** EL DINERO NUNCA DUERME *** SOLO LOS PERDEDORES ALMUERZAN *** STRATTON OAKMONT: DOMINANDO EL MUNDO *** $BTC: 64,200 ▲ *** $GOLD: 2,150 ▲ ***
-        </div>
-    </footer>
+    <div id="ticker"><div class="ticker-move">*** EL DINERO NUNCA DUERME *** CUIDADO CON LAS MULTAS POR USURA (+5% ERROR = DESPIDO)  ***</div></div>
 
     <script>
-        // SONIDOS (Usando Web Audio API para no depender de archivos externos)
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        function playSound(freq, type, duration) {
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.connect(gain); gain.connect(audioCtx.destination);
-            osc.type = type; osc.frequency.value = freq;
-            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
-            osc.start(); osc.stop(audioCtx.currentTime + duration);
+        let money = 0;
+        let time = 120;
+        const errores = ["¡BASURA!", "¡NOVATO!", "¡ERROR! ¡LA SEC TE BUSCA!", "¡A LIMPIAR BAÑOS!", "¡DESPEDIDO!"];
+        
+        const audio = new (window.AudioContext || window.webkitAudioContext)();
+        function sound(type){
+            const o = audio.createOscillator(), g = audio.createGain();
+            o.connect(g); g.connect(audio.destination);
+            o.type = type==='w'?'triangle':'sawtooth';
+            o.frequency.setValueAtTime(type==='w'?880:110, audio.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.01, audio.currentTime+0.5);
+            o.start(); o.stop(audio.currentTime+0.5);
         }
 
-        const errores = [
-            "¡MALDITA SEA, NOVATO! ¡MI ABUELA CALCULA MEJOR QUE TÚ!",
-            "¿ESTÁS INTENTANDO ROBARME? ¡ESE CÁLCULO ES BASURA!",
-            "¡WTF! ¡EL SRI ACABA DE ENTRAR POR TU CULPA!",
-            "¡EQUIVOCADO! ¡VUELVE A LA ESCUELA O VETE A LIMPIAR BAÑOS!",
-            "¡ESTÁS DESPEDIDO! ...TE DARÉ OTRA OPORTUNIDAD, ¡PERO HAZLO BIEN!"
-        ];
+        setInterval(() => { if(time > 0) time--; document.getElementById('timer').innerText = `TIEMPO: 0${Math.floor(time/60)}:${(time%60).toString().padStart(2,'0')}`; }, 1000);
 
-        let totalBalance = 0;
-        let timeLeft = 120;
+        function valida(l) {
+            const v = parseFloat(document.getElementById('ans'+l).value);
+            const f = document.getElementById('feed'+l);
+            let ok = false; let win = 0;
 
-        // CRONÓMETRO
-        setInterval(() => {
-            if(timeLeft > 0) {
-                timeLeft--;
-                const m = Math.floor(timeLeft/60);
-                const s = timeLeft % 60;
-                document.getElementById('timer').innerText = `TIEMPO: 0${m}:${s<10?'0':''}${s}`;
+            if(l===1 && v===80000) { 
+                ok = true; win = 50000; 
+                if(time > 0) { // Si queda tiempo, gana el bono del 5% 
+                    win *= 1.05; 
+                    document.getElementById('p-tel').classList.add('earned');
+                }
             }
-        }, 1000);
-
-        function checkAnswer(lvl) {
-            const feedback = document.getElementById('feedback');
-            const val = parseFloat(document.getElementById('input' + lvl).value);
-            let isCorrect = false;
-            let profit = 0;
-
-            // Lógica de Niveles (Basada en documento proporcionado)
-            if(lvl === 1 && val === 80000) { // I = 1,000,000 * 0.01 * 8 
-                isCorrect = true; profit = 50000;
-            } else if(lvl === 2 && Math.abs(val - 1818181.82) < 1) { // P = 2M / (1 + 0.15/12 * 8) 
-                isCorrect = true; profit = 150000;
+            if(l===2 && Math.abs(v - 1818181.82) < 2) { 
+                ok = true; win = 100000; 
+                document.getElementById('p-pin').classList.add('earned');
             }
 
-            if(isCorrect) {
-                playSound(880, 'square', 0.2); // Sonido "Ching"
-                totalBalance += profit;
-                document.getElementById('balance').innerText = `$${totalBalance.toLocaleString()}`;
-                feedback.className = "success";
-                feedback.innerHTML = "¡BOOM! TRATO CERRADO. GANASTE LA MALDITA COMISIÓN.<br><button onclick='nextLevel("+lvl+")' style='margin-top:10px; background:var(--gold)'>IR AL SIGUIENTE NIVEL</button>";
-                if(lvl === 1) document.getElementById('rank').innerText = "VENDEDOR";
+            if(ok) {
+                sound('w');
+                money += win;
+                document.getElementById('money').innerText = `$${money.toLocaleString()}`;
+                f.innerHTML = `<span style="color:var(--gold)">¡BOOM! +$${win.toLocaleString()}</span><br><button onclick="next(${l})">AVANZAR</button>`;
             } else {
-                playSound(110, 'sawtooth', 0.4); // Sonido Error
-                feedback.className = "error";
-                feedback.innerText = errores[Math.floor(Math.random() * errores.length)];
-                document.getElementById('main-terminal').style.borderColor = "red";
-                setTimeout(() => document.getElementById('main-terminal').style.borderColor = "var(--green)", 500);
+                sound('e');
+                f.innerHTML = `<span style="color:red">${errores[Math.floor(Math.random()*errores.length)]}</span>`;
             }
         }
 
-        function nextLevel(currentLvl) {
-            document.getElementById('lvl' + currentLvl).classList.remove('active');
-            document.getElementById('feedback').innerText = "";
-            const next = currentLvl + 1;
-            if(document.getElementById('lvl' + next)) {
-                document.getElementById('lvl' + next).classList.add('active');
-                timeLeft = 120; // Reset tiempo
+        function next(l) {
+            document.querySelectorAll('.game-content').forEach(c => c.classList.remove('active'));
+            const n = l + 1;
+            if(document.getElementById('lvl'+n)) {
+                document.getElementById('lvl'+n).classList.add('active');
+                document.getElementById('rank-tag').innerText = "RANGO: BROKER SENIOR [cite: 15]";
+                time = 120;
+            } else {
+                alert("¡FIN DEL ENTRENAMIENTO, CEO! [cite: 31]");
             }
         }
     </script>
