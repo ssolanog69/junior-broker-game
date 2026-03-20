@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stratton Oakmont Jr. - Nivel 1</title>
+    <style>
+        :root {
+            --wallstreet-green: #00ff41;
+            --gold: #ffd700;
+            --dark-bg: #0a0a0a;
+            --terminal-font: 'Courier New', Courier, monospace;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--wallstreet-green);
+            font-family: var(--terminal-font);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            text-transform: uppercase;
+        }
+
+        #terminal {
+            width: 80%;
+            max-width: 800px;
+            border: 2px solid var(--wallstreet-green);
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.2);
+            position: relative;
+        }
+
+        .header {
+            border-bottom: 1px solid var(--wallstreet-green);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .timer { color: var(--gold); font-weight: bold; }
+
+        .briefing { margin-bottom: 30px; line-height: 1.5; }
+
+        input {
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid var(--wallstreet-green);
+            color: var(--gold);
+            font-family: var(--terminal-font);
+            font-size: 1.2rem;
+            width: 200px;
+            outline: none;
+        }
+
+        button {
+            background: var(--wallstreet-green);
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        button:hover { background: var(--gold); }
+
+        #feedback { margin-top: 20px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div id="terminal">
+    <div class="header">
+        <span>Broker ID: #001 - Apprentice</span>
+        <span id="timer" class="timer">TIEMPO: 02:00</span>
+    </div>
+
+    <div class="briefing">
+        <h2>> NIVEL 1: THE COLD CALL</h2>
+        <p>CLIENTE: Sr. Belfort Senior</p>
+        <p>MISIÓN: Convence al cliente de invertir <strong>$1,000,000</strong> a una tasa del <strong>1% mensual simple</strong>.</p>
+        <p>RETO: ¿Cuánto recibirá el cliente en concepto de <strong>INTERÉS</strong> tras <strong>8 meses</strong>?</p>
+    </div>
+
+    <div class="action">
+        <span>$</span> <input type="number" id="answer" placeholder="INGRESE MONTO">
+        <br>
+        <button onclick="checkAnswer()">CERRAR VENTA</button>
+    </div>
+
+    <div id="feedback"></div>
+</div>
+
+<script>
+    let timeLeft = 120;
+    const timerDisplay = document.getElementById('timer');
+    
+    // Lógica del Cronómetro
+    const countdown = setInterval(() => {
+        timeLeft--;
+        let mins = Math.floor(timeLeft / 60);
+        let secs = timeLeft % 60;
+        timerDisplay.innerHTML = `TIEMPO: 0${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        
+        if (timeLeft <= 0) {
+            clearInterval(countdown);
+            timerDisplay.innerHTML = "¡BONO DE TIEMPO PERDIDO!";
+            timerDisplay.style.color = "red";
+        }
+    }, 1000);
+
+    function checkAnswer() {
+        const userAnswer = parseFloat(document.getElementById('answer').value);
+        const correctAnswer = 1000000 * 0.01 * 8; // I = C * i * n
+        const feedback = document.getElementById('feedback');
+
+        if (userAnswer === correctAnswer) {
+            let mensaje = "¡TRATO CERRADO! Comisión enviada.";
+            if (timeLeft > 0) mensaje += " ¡GANASTE EL TELÉFONO DE BRONCE!";
+            feedback.innerHTML = `<span style="color:var(--gold)">${mensaje}</span>`;
+            feedback.innerHTML += "<br><button onclick='location.reload()'>SIGUIENTE NIVEL</button>";
+            clearInterval(countdown);
+        } else {
+            // Penalización por error de cálculo (Usura o pérdida)
+            feedback.innerHTML = "<span style="color:red">ERROR DE CÁLCULO. ¡LA SEC ESTÁ INVESTIGANDO!</span>";
+        }
+    }
+</script>
+
+</body>
+</html>
