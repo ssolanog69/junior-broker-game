@@ -1,94 +1,195 @@
 <!DOCTYPE html>
-    border: 2px solid #00ff00;
-    padding: 20px;
-    height: 70vh;
-    overflow-y: auto;
-}
-input {
-    background: black;
-    border: 1px solid #00ff00;
-    color: #00ff00;
-    padding: 10px;
-    width: 300px;
-}
-button {
-    background: #00ff00;
-    color: black;
-    padding: 10px;
-    border: none;
-    cursor: pointer;
-}
-</style>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>TERMINAL STRATTON OAKMONT - ACCESO RESTRINGIDO</title>
+    <style>
+        :root {
+            --green: #00ff41; --gold: #ffd700; --bg: #0a0a0a;
+            --panel-bg: rgba(0, 40, 0, 0.3); --font: 'Courier New', Courier, monospace;
+        }
+
+        body {
+            background-color: var(--bg); color: var(--green); font-family: var(--font);
+            margin: 0; height: 100vh; display: grid;
+            grid-template-columns: 250px 1fr 250px; grid-template-rows: 1fr 1fr 60px;
+            text-transform: uppercase; overflow: hidden;
+        }
+
+        /* ESTÉTICA DE TERMINAL CRT */
+        #main-terminal {
+            grid-column: 2; grid-row: 1 / 3; border: 3px solid var(--green);
+            margin: 20px; padding: 30px; position: relative;
+            background: radial-gradient(circle, #0c200c 0%, #050a05 100%);
+            box-shadow: inset 0 0 100px rgba(0,255,65,0.2), 0 0 20px rgba(0,255,65,0.4);
+        }
+
+        .scanline {
+            width: 100%; height: 2px; background: rgba(0, 255, 65, 0.1);
+            position: absolute; animation: scan 4s linear infinite; z-index: 10;
+        }
+        @keyframes scan { from { top: 0; } to { top: 100%; } }
+
+        /* PANELES DECORATIVOS (INMERSIÓN) */
+        .panel { background: var(--panel-bg); border: 1px solid var(--green); margin: 10px; padding: 10px; font-size: 0.75rem; }
+        .ticker { grid-column: 1 / 4; grid-row: 3; background: #000; display: flex; align-items: center; overflow: hidden; border-top: 2px solid var(--green); }
+        .ticker-text { white-space: nowrap; animation: scroll 20s linear infinite; color: var(--gold); }
+        @keyframes scroll { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
+
+        /* ELEMENTOS DEL JUEGO */
+        .level-content { display: none; }
+        .active { display: block; }
+        .highlight { color: #fff; text-shadow: 0 0 5px var(--green); font-weight: bold; }
+        
+        input {
+            background: transparent; border: none; border-bottom: 2px solid var(--green);
+            color: var(--gold); font-family: var(--font); font-size: 1.8rem;
+            width: 100%; text-align: center; outline: none; margin: 20px 0;
+        }
+        
+        button {
+            background: var(--green); color: #000; border: none; padding: 15px;
+            width: 100%; font-weight: bold; font-size: 1.2rem; cursor: pointer;
+            transition: 0.2s; box-shadow: 0 5px 0 #00641a;
+        }
+        button:hover { background: var(--gold); box-shadow: 0 5px 0 #bfa300; }
+        button:active { transform: translateY(4px); box-shadow: 0 1px 0 #bfa300; }
+
+        #feedback { margin-top: 20px; font-weight: bold; text-align: center; min-height: 50px; }
+        .success { color: var(--gold); }
+        .error { color: #ff3333; }
+    </style>
 </head>
 <body>
 
-<h2>STRATTON OAKMONT - SISTEMA INTERNO</h2>
-<div id="terminal"></div>
-<br>
-<input type="number" id="respuesta" placeholder="Ingresa tu respuesta">
-<button onclick="verificar()">ENVIAR</button>
+    <div class="scanline"></div>
 
-<script>
-const terminal = document.getElementById("terminal");
+    <aside style="grid-column: 1; grid-row: 1/3;">
+        <div class="panel">
+            <div style="color:var(--gold)">ESTADO DE CUENTA</div>
+            <div id="balance">$0.00</div>
+            <div style="margin-top:10px;">RANGO: <span id="rank">APRENDIZ</span></div>
+        </div>
+        <div class="panel">
+            <div>NASDAQ: 18,210 <span style="color:var(--green)">▲</span></div>
+            <div>DOW J: 39,120 <span style="color:red">▼</span></div>
+        </div>
+    </aside>
 
-const errores = [
-"¡MALDITA SEA, NOVATO! ¡MI ABUELA CALCULA MEJOR QUE TÚ!",
-"¿ESTÁS INTENTANDO ROBARME? ¡ESE CÁLCULO ES BASURA!",
-"WTF! ¡EL SRI ACABA DE ENTRAR POR TU CULPA!",
-"¡EQUIVOCADO! ¡VUELVE A LA ESCUELA!",
-"¡ESTÁS DESPEDIDO!... TE DOY OTRA OPORTUNIDAD"
-];
+    <main id="main-terminal">
+        <div style="display:flex; justify-content: space-between; border-bottom: 1px solid var(--green); padding-bottom: 5px; margin-bottom: 20px;">
+            <span>SISTEMA: V0.1-ALPHA</span>
+            <span id="timer" style="color:var(--gold)">TIEMPO: 02:00</span>
+        </div>
 
-let nivel = 1;
+        <div id="lvl1" class="level-content active">
+            <h2>> INICIANDO TRANSMISIÓN...</h2>
+            <h3>NIVEL 1: THE COLD CALL</h3>
+            <p>ESCUCHA BIEN, <span class="highlight">NOVATO</span>. TENEMOS AL <span class="highlight">SR. BELFORT SENIOR</span> EN LA LÍNEA. ES UN PEZ GORDO.</p>
+            <p>TU MISIÓN ES SENCILLA: CONVENCERLO DE INVERTIR <span class="highlight">$1,000,000</span> EN UNA CUENTA QUE PAGA EL <span class="highlight">1% SIMPLE MENSUAL</span>.</p>
+            <p>¿CUÁNTO RECIBIRÁ DE <span class="highlight">INTERÉS</span> TRAS <span class="highlight">8 MESES</span>? NO METAS LA PATA, O TE PATEARÉ EL TRASERO.</p>
+            <input type="number" id="input1" placeholder="INGRESA EL MONTO" autocomplete="off">
+            <button onclick="checkAnswer(1)">CERRAR VENTA</button>
+        </div>
 
-function escribir(texto) {
-    terminal.innerHTML += texto + "<br><br>";
-    terminal.scrollTop = terminal.scrollHeight;
-}
+        <div id="lvl2" class="level-content">
+            <h3>NIVEL 2: EL NEGOCIADOR DE PAGARÉS</h3>
+            <p>¡NADA MAL! PERO AHORA VIENE LO REAL. UN CLIENTE NECESITA LIQUIDEZ Y TRAE UN PAGARÉ DE <span class="highlight">$2,000,000</span> QUE VENCE EN <span class="highlight">8 MESES</span>.</p>
+            <p>CALCULA EL <span class="highlight">DESCUENTO RACIONAL</span> CON UNA TASA DEL <span class="highlight">15% ANUAL</span>.</p>
+            <p>¿CUÁNTO DINERO EFECTIVO LE ENTREGARÁS? ¡HAZLO RÁPIDO O PIERDO LA COMISIÓN!</p>
+            <input type="number" id="input2" placeholder="0.00" autocomplete="off">
+            <button onclick="checkAnswer(2)">LIQUIDAR PAGARÉ</button>
+        </div>
 
-function iniciarNivel() {
-    if (nivel === 1) {
-        escribir("INICIANDO TRANSMISIÓN...");
-        escribir("NIVEL 1: THE COLD CALL");
-        escribir("ESCUCHA BIEN, NOVATO...");
-        escribir("TENEMOS AL SR. BELFORT SENIOR EN LA LÍNEA.");
-        escribir("QUIERE SABER CUÁNTO GANARÁ SI INVIERTE $1,000,000 AL 1% MENSUAL DURANTE 8 MESES.");
-        escribir("NO METAS LA PATA...");
-    }
-}
+        <div id="feedback"></div>
+    </main>
 
-function verificar() {
-    const respuesta = parseFloat(document.getElementById("respuesta").value);
+    <aside style="grid-column: 3; grid-row: 1/3;">
+        <div class="panel">
+            <div style="color:var(--gold)">ORDENES PENDIENTES</div>
+            <div>STRATTON: BUY</div>
+            <div>AERO: SELL</div>
+        </div>
+    </aside>
 
-    if (nivel === 1) {
-        const correcta = 80000;
+    <footer class="ticker">
+        <div class="ticker-text">
+            *** EL DINERO NUNCA DUERME *** SOLO LOS PERDEDORES ALMUERZAN *** STRATTON OAKMONT: DOMINANDO EL MUNDO *** $BTC: 64,200 ▲ *** $GOLD: 2,150 ▲ ***
+        </div>
+    </footer>
 
-        if (respuesta === correcta) {
-            escribir("✔ CORRECTO... BIEN HECHO, NOVATO.");
-            escribir("ACABAS DE CERRAR TU PRIMER TRATO.");
-            escribir("SIGUE ASÍ Y TAL VEZ NO TE DESPIDA HOY.");
-            sonidoExito();
-            nivel++;
-        } else {
-            const random = errores[Math.floor(Math.random() * errores.length)];
-            escribir(random);
-            sonidoError();
+    <script>
+        // SONIDOS (Usando Web Audio API para no depender de archivos externos)
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playSound(freq, type, duration) {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.type = type; osc.frequency.value = freq;
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+            osc.start(); osc.stop(audioCtx.currentTime + duration);
         }
-    }
-}
 
-function sonidoExito() {
-    const audio = new Audio("https://www.soundjay.com/misc/sounds/cash-register-01.mp3");
-    audio.play();
-}
+        const errores = [
+            "¡MALDITA SEA, NOVATO! ¡MI ABUELA CALCULA MEJOR QUE TÚ!",
+            "¿ESTÁS INTENTANDO ROBARME? ¡ESE CÁLCULO ES BASURA!",
+            "¡WTF! ¡EL SRI ACABA DE ENTRAR POR TU CULPA!",
+            "¡EQUIVOCADO! ¡VUELVE A LA ESCUELA O VETE A LIMPIAR BAÑOS!",
+            "¡ESTÁS DESPEDIDO! ...TE DARÉ OTRA OPORTUNIDAD, ¡PERO HAZLO BIEN!"
+        ];
 
-function sonidoError() {
-    const audio = new Audio("https://www.soundjay.com/button/beep-10.mp3");
-    audio.play();
-}
+        let totalBalance = 0;
+        let timeLeft = 120;
 
-iniciarNivel();
-</script>
+        // CRONÓMETRO
+        setInterval(() => {
+            if(timeLeft > 0) {
+                timeLeft--;
+                const m = Math.floor(timeLeft/60);
+                const s = timeLeft % 60;
+                document.getElementById('timer').innerText = `TIEMPO: 0${m}:${s<10?'0':''}${s}`;
+            }
+        }, 1000);
 
+        function checkAnswer(lvl) {
+            const feedback = document.getElementById('feedback');
+            const val = parseFloat(document.getElementById('input' + lvl).value);
+            let isCorrect = false;
+            let profit = 0;
+
+            // Lógica de Niveles (Basada en documento proporcionado)
+            if(lvl === 1 && val === 80000) { // I = 1,000,000 * 0.01 * 8 
+                isCorrect = true; profit = 50000;
+            } else if(lvl === 2 && Math.abs(val - 1818181.82) < 1) { // P = 2M / (1 + 0.15/12 * 8) 
+                isCorrect = true; profit = 150000;
+            }
+
+            if(isCorrect) {
+                playSound(880, 'square', 0.2); // Sonido "Ching"
+                totalBalance += profit;
+                document.getElementById('balance').innerText = `$${totalBalance.toLocaleString()}`;
+                feedback.className = "success";
+                feedback.innerHTML = "¡BOOM! TRATO CERRADO. GANASTE LA MALDITA COMISIÓN.<br><button onclick='nextLevel("+lvl+")' style='margin-top:10px; background:var(--gold)'>IR AL SIGUIENTE NIVEL</button>";
+                if(lvl === 1) document.getElementById('rank').innerText = "VENDEDOR";
+            } else {
+                playSound(110, 'sawtooth', 0.4); // Sonido Error
+                feedback.className = "error";
+                feedback.innerText = errores[Math.floor(Math.random() * errores.length)];
+                document.getElementById('main-terminal').style.borderColor = "red";
+                setTimeout(() => document.getElementById('main-terminal').style.borderColor = "var(--green)", 500);
+            }
+        }
+
+        function nextLevel(currentLvl) {
+            document.getElementById('lvl' + currentLvl).classList.remove('active');
+            document.getElementById('feedback').innerText = "";
+            const next = currentLvl + 1;
+            if(document.getElementById('lvl' + next)) {
+                document.getElementById('lvl' + next).classList.add('active');
+                timeLeft = 120; // Reset tiempo
+            }
+        }
+    </script>
 </body>
 </html>
