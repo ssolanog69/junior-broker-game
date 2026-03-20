@@ -1,258 +1,105 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stratton Oakmont Jr. - Nivel 1: The Cold Call</title>
-    <style>
-        /* ESTILOS GLOBALES: Atmósfera de Terminal Financiera 90s */
-        :root {
-            --wallstreet-green: #00ff41; /* Verde Fósforo */
-            --gold: #ffd700; /* Dorado Ambición */
-            --dark-bg: #050505; /* Negro Profundo */
-            --terminal-font: 'Courier New', Courier, monospace;
-            --adrenaline-red: #ff4141; /* Rojo Penalización */
-        }
-
-        body {
-            background-color: var(--dark-bg);
-            color: var(--wallstreet-green);
-            font-family: var(--terminal-font);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            text-transform: uppercase; /* Todo en mayúsculas para más intensidad */
-            overflow: hidden; /* Evita scrolls innecesarios */
-        }
-
-        /* Contenedor Principal: La Terminal */
-        #terminal {
-            width: 90%;
-            max-width: 850px;
-            border: 3px solid var(--wallstreet-green);
-            padding: 30px;
-            box-shadow: 0 0 30px rgba(0, 255, 65, 0.3);
-            position: relative;
-            background: rgba(0, 0, 0, 0.9);
-        }
-
-        /* Encabezado de Estado */
-        .header {
-            border-bottom: 2px solid var(--wallstreet-green);
-            margin-bottom: 25px;
-            padding-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            font-weight: bold;
-            font-size: 1.1rem;
-        }
-
-        .timer { color: var(--gold); text-shadow: 0 0 5px var(--gold); }
-
-        /* Sección Narrativa: El Briefing */
-        .briefing { margin-bottom: 35px; line-height: 1.6; }
-        .briefing h2 { color: var(--gold); margin-top: 0; text-shadow: 0 0 8px var(--gold); }
-        .highlight { color: #fff; font-weight: bold; background-color: rgba(0, 255, 65, 0.1); padding: 2px 5px; }
-
-        /* Zona de Acción: Input y Botón */
-        .action-zone {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
-            border-top: 1px solid rgba(0, 255, 65, 0.3);
-            padding-top: 25px;
-        }
-
-        .input-group {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            font-size: 1.5rem;
-        }
-
-        input {
-            background: transparent;
-            border: none;
-            border-bottom: 3px solid var(--wallstreet-green);
-            color: var(--gold);
-            font-family: var(--terminal-font);
-            font-size: 1.8rem;
-            width: 300px;
-            outline: none;
-            text-align: center;
-            transition: border-color 0.3s;
-        }
-
-        input:focus { border-color: var(--gold); }
-
-        /* Botón de Cierre: El momento de la verdad */
-        button#btnVenta {
-            background-color: var(--wallstreet-green);
-            color: black;
-            border: none;
-            padding: 18px 40px;
-            cursor: pointer;
-            font-weight: bold;
-            font-family: var(--terminal-font);
-            font-size: 1.4rem;
-            letter-spacing: 2px;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 0 #00aa2c;
-        }
-
-        button#btnVenta:hover {
-            background-color: var(--gold);
-            transform: translateY(-2px);
-            box-shadow: 0 7px 0 #bfa300;
-        }
-
-        button#btnVenta:active {
-            transform: translateY(3px);
-            box-shadow: 0 2px 0 #bfa300;
-        }
-
-        /* Feedback y Siguientes Pasos */
-        #feedback {
-            margin-top: 30px;
-            font-size: 1.3rem;
-            text-align: center;
-            min-height: 60px;
-            line-height: 1.4;
-        }
-
-        .success-msg { color: var(--gold); text-shadow: 0 0 10px var(--gold); font-weight: bold; }
-        .error-msg { color: var(--adrenaline-red); text-shadow: 0 0 10px var(--adrenaline-red); font-weight: bold; }
-
-        button.next-level {
-            background: transparent;
-            border: 2px solid var(--gold);
-            color: var(--gold);
-            padding: 10px 20px;
-            margin-top: 15px;
-            cursor: pointer;
-            font-family: var(--terminal-font);
-            text-transform: uppercase;
-        }
-        button.next-level:hover { background: rgba(255, 215, 0, 0.1); }
-
-    </style>
+<meta charset="UTF-8">
+<title>Domina el Parqué</title>
+<style>
+body {
+    background-color: black;
+    color: #00ff00;
+    font-family: 'Courier New', monospace;
+    padding: 20px;
+}
+#terminal {
+    border: 2px solid #00ff00;
+    padding: 20px;
+    height: 70vh;
+    overflow-y: auto;
+}
+input {
+    background: black;
+    border: 1px solid #00ff00;
+    color: #00ff00;
+    padding: 10px;
+    width: 300px;
+}
+button {
+    background: #00ff00;
+    color: black;
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+}
+</style>
 </head>
 <body>
 
-<div id="terminal">
-    <div class="header">
-        <span>ESTADO: APRENDIZ #001</span>
-        <span>RANGO: COLD CALLER</span>
-        <span id="timer" class="timer">TIEMPO LÍMITE: 02:00</span>
-    </div>
-
-    <div class="briefing">
-        <h2>> INICIANDO TRANSMISIÓN... NIVEL 1: THE COLD CALL</h2>
-        <p>ESCUCHA BIEN, NOVATO. TENEMOS AL <span class="highlight">SR. BELFORT SENIOR</span> EN LA LÍNEA. ES UN PEZ GORDO.</p>
-        <p>TU MISIÓN ES SENCILLA: CONVENCERLO DE INVERTIR SUS PRIMEROS <span class="highlight">$1,000,000</span> EN UNA CUENTA QUE PAGA EL <span class="highlight">1% SIMPLE MENSUAL</span>.</p>
-        <p>PARA CERRAR EL TRATO, DEBES DECIRLE EXACTAMENTE CUÁNTO RECIBIRÁ DE <span class="highlight">INTERÉS</span> TRAS <span class="highlight">8 MESES</span>.</p>
-        <p>NO METAS LA PATA. SI LO HACES RÁPIDO, HAY BONO.</p>
-    </div>
-
-    <div class="action-zone">
-        <div class="input-group">
-            <span>$</span>
-            <input type="number" id="answer" placeholder="RESULTADO" autocomplete="off">
-        </div>
-        <button id="btnVenta">CERRAR VENTA</button>
-    </div>
-
-    <div id="feedback"></div>
-</div>
+<h2>STRATTON OAKMONT - SISTEMA INTERNO</h2>
+<div id="terminal"></div>
+<br>
+<input type="number" id="respuesta" placeholder="Ingresa tu respuesta">
+<button onclick="verificar()">ENVIAR</button>
 
 <script>
-    // Configuración del Nivel
-    let timeLeft = 120; // 2 minutos en segundos
-    const timerDisplay = document.getElementById('timer');
-    const btnVenta = document.getElementById('btnVenta');
-    const answerInput = document.getElementById('answer');
-    const feedbackDisplay = document.getElementById('feedback');
-    
-    // Lógica del Cronómetro (Presión Narrativa)
-    const countdown = setInterval(() => {
-        timeLeft--;
-        let mins = Math.floor(timeLeft / 60);
-        let secs = timeLeft % 60;
-        
-        // Actualizar display con formato MM:SS
-        timerDisplay.innerText = `TIEMPO LÍMITE: 0${mins}:${secs < 10 ? '0' : ''}${secs}`;
-        
-        // Feedback visual cuando queda poco tiempo
-        if (timeLeft <= 30) {
-            timerDisplay.style.color = "var(--adrenaline-red)";
-            timerDisplay.style.textShadow = "0 0 10px var(--adrenaline-red)";
-        }
+const terminal = document.getElementById("terminal");
 
-        if (timeLeft <= 0) {
-            clearInterval(countdown);
-            timerDisplay.innerText = "¡BONO DE TIEMPO PERDIDO!";
-        }
-    }, 1000);
+const errores = [
+"¡MALDITA SEA, NOVATO! ¡MI ABUELA CALCULA MEJOR QUE TÚ!",
+"¿ESTÁS INTENTANDO ROBARME? ¡ESE CÁLCULO ES BASURA!",
+"WTF! ¡EL SRI ACABA DE ENTRAR POR TU CULPA!",
+"¡EQUIVOCADO! ¡VUELVE A LA ESCUELA!",
+"¡ESTÁS DESPEDIDO!... TE DOY OTRA OPORTUNIDAD"
+];
 
-    // Lógica de Validación (La "Venta")
-    btnVenta.onclick = function() {
-        const userAnswer = answerInput.value;
-        const correctAnswer = "80000"; // I = 1,000,000 * 0.01 * 8
-        
-        // Limpiar feedback anterior
-        feedbackDisplay.innerHTML = "";
+let nivel = 1;
 
-        if (userAnswer === correctAnswer) {
-            // ÉXITO: Narrativa de victoria
-            clearInterval(countdown); // Detener reloj
-            
-            let mensajeClase = "success-msg";
-            let mensajeTexto = "¡BOOM! ¡TRATO CERRADO! EL CLIENTE ESTÁ FELIZ.";
-            
-            if (timeLeft > 0) {
-                mensajeTexto += "<br>GANASTE EL 'TELÉFONO DE BRONCE' (BONO DEL 5%).";
-            } else {
-                mensajeTexto += "<br>CERRÓ, PERO TARDASTE MUCHO. SIN BONO ESTA VEZ.";
-            }
+function escribir(texto) {
+    terminal.innerHTML += texto + "<br><br>";
+    terminal.scrollTop = terminal.scrollHeight;
+}
 
-            feedbackDisplay.innerHTML = `
-                <span class="${mensajeClase}">${mensajeTexto}</span>
-                <br>
-                <button class="next-level" onclick="alert('PREPARANDO EL NIVEL 2: EL NEGOCIADOR DE PAGARÉS...')">SIGUIENTE OBJETIVO</button>
-            `;
-            
-            // Deshabilitar input y botón tras éxito
-            answerInput.disabled = true;
-            btnVenta.disabled = true;
-            btnVenta.style.opacity = "0.5";
+function iniciarNivel() {
+    if (nivel === 1) {
+        escribir("INICIANDO TRANSMISIÓN...");
+        escribir("NIVEL 1: THE COLD CALL");
+        escribir("ESCUCHA BIEN, NOVATO...");
+        escribir("TENEMOS AL SR. BELFORT SENIOR EN LA LÍNEA.");
+        escribir("QUIERE SABER CUÁNTO GANARÁ SI INVIERTE $1,000,000 AL 1% MENSUAL DURANTE 8 MESES.");
+        escribir("NO METAS LA PATA...");
+    }
+}
 
-        } else if (userAnswer === "") {
-            // Recordatorio si está vacío
-            feedbackDisplay.innerHTML = `<span class="error-msg">¿QUÉ ESPERAS? ¡INGRESA EL MONTO O PERDEMOS LA VENTA!</span>`;
+function verificar() {
+    const respuesta = parseFloat(document.getElementById("respuesta").value);
+
+    if (nivel === 1) {
+        const correcta = 80000;
+
+        if (respuesta === correcta) {
+            escribir("✔ CORRECTO... BIEN HECHO, NOVATO.");
+            escribir("ACABAS DE CERRAR TU PRIMER TRATO.");
+            escribir("SIGUE ASÍ Y TAL VEZ NO TE DESPIDA HOY.");
+            sonidoExito();
+            nivel++;
         } else {
-            // FALLO: Narrativa de penalización (Usura/Error)
-            feedbackDisplay.innerHTML = `
-                <span class="error-msg">¡MALDITA SEA, NOVATO! ESE CÁLCULO ESTÁ MAL.<br>LA SEC NOS VA A MULTAR POR USURA. REVISA TUS NÚMEROS.</span>
-            `;
-            // Efecto visual de "error" en la terminal
-            document.getElementById('terminal').style.borderColor = "var(--adrenaline-red)";
-            setTimeout(() => {
-                document.getElementById('terminal').style.borderColor = "var(--wallstreet-green)";
-            }, 500);
+            const random = errores[Math.floor(Math.random() * errores.length)];
+            escribir(random);
+            sonidoError();
         }
-    };
+    }
+}
 
-    // Permitir "Enter" para enviar
-    answerInput.addEventListener("keypress", function(event) {
-        if (event.key === "Enter") {
-            event.preventDefault();
-            btnVenta.click();
-        }
-    });
+function sonidoExito() {
+    const audio = new Audio("https://www.soundjay.com/misc/sounds/cash-register-01.mp3");
+    audio.play();
+}
 
+function sonidoError() {
+    const audio = new Audio("https://www.soundjay.com/button/beep-10.mp3");
+    audio.play();
+}
+
+iniciarNivel();
 </script>
 
 </body>
