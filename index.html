@@ -2,63 +2,257 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Stratton Oakmont - Nivel 1</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stratton Oakmont Jr. - Estación de Trading</title>
     <style>
-        :root { --green: #00ff41; --gold: #ffd700; --bg: #0a0a0a; }
-        body { background: var(--bg); color: var(--green); font-family: 'Courier New', monospace; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        #terminal { width: 90%; max-width: 700px; border: 2px solid var(--green); padding: 30px; box-shadow: 0 0 20px rgba(0, 255, 65, 0.2); }
-        .header { display: flex; justify-content: space-between; border-bottom: 1px solid var(--green); margin-bottom: 20px; padding-bottom: 10px; }
-        input { background: transparent; border: none; border-bottom: 2px solid var(--green); color: var(--gold); font-size: 1.5rem; width: 100%; outline: none; margin: 20px 0; }
-        button { background: var(--green); color: black; border: none; padding: 15px 30px; cursor: pointer; font-weight: bold; width: 100%; font-size: 1.2rem; }
-        button:hover { background: var(--gold); }
-        #feedback { margin-top: 20px; font-size: 1.2rem; text-align: center; min-height: 50px; }
+        /* --- ESTILOS DE LA ATMÓSFERA --- */
+        :root {
+            --green: #00ff41; /* Verde CRT */
+            --gold: #ffd700; /* Dorado */
+            --bg: #030303;    /* Fondo casi negro */
+            --panel-bg: rgba(0, 20, 0, 0.5); /* Fondo paneles */
+            --font: 'Courier New', Courier, monospace;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--green);
+            font-family: var(--font);
+            margin: 0;
+            height: 100vh;
+            display: grid;
+            /* Definimos la rejilla de 3x3: Paneles laterales y Centro */
+            grid-template-columns: 250px 1fr 250px;
+            grid-template-rows: 1fr 1fr 100px; /* Paneles altos, terminal central, pie */
+            text-transform: uppercase;
+            overflow: hidden; /* Sin scrolls */
+        }
+
+        /* --- ESTILOS COMUNES DE PANELES --- */
+        .panel {
+            background: var(--panel-bg);
+            border: 1px solid rgba(0, 255, 65, 0.2);
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            box-shadow: inset 0 0 10px rgba(0, 255, 65, 0.1);
+        }
+
+        .panel-header {
+            border-bottom: 1px solid var(--green);
+            color: var(--gold);
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        /* --- SIMULACIÓN DE GRÁFICOS (CSS PURO) --- */
+        .chart-line {
+            width: 100%;
+            height: 100px;
+            background: repeating-linear-gradient(90deg, transparent, transparent 10px, rgba(0,255,65,0.05) 10px, rgba(0,255,65,0.05) 11px),
+                        linear-gradient(to bottom right, transparent 49%, var(--green) 50%, var(--green) 51%, transparent 52%);
+            border-bottom: 2px solid var(--green);
+        }
+
+        .chart-bars {
+            display: flex;
+            align-items: flex-end;
+            gap: 2px;
+            height: 100px;
+        }
+        .bar { width: 15px; background: var(--green); opacity: 0.7; }
+
+        /* --- TERMINAL CENTRAL (EL JUEGO) --- */
+        #main-terminal {
+            grid-column: 2; /* Ocupa la columna central */
+            grid-row: 1 / 3; /* Ocupa las dos filas de arriba */
+            border: 4px solid var(--green);
+            padding: 40px;
+            box-shadow: 0 0 40px rgba(0, 255, 65, 0.4);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 10;
+        }
+
+        .terminal-header {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 2px solid var(--green);
+            margin-bottom: 30px;
+            padding-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .timer { color: var(--gold); text-shadow: 0 0 5px var(--gold); }
+
+        .briefing h2 { color: var(--gold); text-shadow: 0 0 10px var(--gold); }
+        .briefing p { line-height: 1.6; }
+        .highlight { color: #fff; background-color: rgba(0, 255, 65, 0.1); padding: 2px 5px; }
+
+        .action-zone { margin-top: 40px; text-align: center; }
+        .input-group { font-size: 2rem; margin-bottom: 25px; }
+        
+        input {
+            background: transparent; border: none;
+            border-bottom: 3px solid var(--green);
+            color: var(--gold); font-family: var(--font);
+            font-size: 2.2rem; width: 350px;
+            outline: none; text-align: center;
+        }
+
+        button#btnVenta {
+            background-color: var(--green); color: black;
+            border: none; padding: 20px 50px;
+            cursor: pointer; font-weight: bold;
+            font-family: var(--font); font-size: 1.6rem;
+            letter-spacing: 2px; transition: all 0.2s;
+            box-shadow: 0 5px 0 #00aa2c;
+        }
+        button#btnVenta:hover { background-color: var(--gold); box-shadow: 0 5px 0 #bfa300; }
+        button#btnVenta:active { transform: translateY(3px); box-shadow: 0 2px 0 #bfa300; }
+
+        #feedback { margin-top: 30px; font-size: 1.4rem; text-align: center; min-height: 60px; }
+        .success-msg { color: var(--gold); text-shadow: 0 0 10px var(--gold); }
+        .error-msg { color: #ff4141; text-shadow: 0 0 10px #ff4141; }
+
+        /* --- PANELES LATERALES ESPECÍFICOS --- */
+        #panel-bolsa    { grid-column: 1; grid-row: 1; border-right: none; }
+        #panel-divisas  { grid-column: 1; grid-row: 2; border-right: none; }
+        #panel-futuros  { grid-column: 3; grid-row: 1; border-left: none; }
+        #panel-opciones { grid-column: 3; grid-row: 2; border-left: none; }
+
+        /* --- PIE DE PÁGINA (TICKER) --- */
+        #market-ticker {
+            grid-column: 1 / 4; grid-row: 3;
+            background: #000; border-top: 2px solid var(--green);
+            display: flex; align-items: center;
+            overflow: hidden; white-space: nowrap;
+            color: var(--gold); font-size: 1rem;
+        }
+        .ticker-content { animation: scroll-ticker 30s linear infinite; }
+        @keyframes scroll-ticker {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+
     </style>
 </head>
 <body>
 
-<div id="terminal">
-    <div class="header">
-        <span>BROKER ID: #001</span>
-        <span id="timer" style="color:var(--gold)">TIEMPO: 02:00</span>
+    <div id="panel-bolsa" class="panel">
+        <div class="panel-header">INDICES GLOBALES</div>
+        <div class="chart-line"></div>
+        <div style="display:flex; justify-content:space-between;">
+            <span>DOWJ: 39,120 <span style="color:#ff4141">▼</span></span>
+            <span>SP500: 5,210 <span style="color:var(--green)">▲</span></span>
+        </div>
+        <div style="font-size:0.7rem; color:rgba(0,255,65,0.5)">DATA REAL-TIME (SIM)</div>
     </div>
 
-    <h2>> NIVEL 1: THE COLD CALL</h2>
-    <p>Inversión: $1,000,000 | Tasa: 1% mensual simple | Tiempo: 8 meses</p>
-    <p><strong>¿CUÁNTO RECIBIRÁ DE INTERÉS?</strong></p>
+    <div id="panel-divisas" class="panel">
+        <div class="panel-header">MERCADO DIVISAS</div>
+        <div>EUR/USD: 1.0845 <span style="color:var(--green)">▲</span></div>
+        <div>USD/JPY: 151.62 <span style="color:#ff4141">▼</span></div>
+        <div>GBP/USD: 1.2630 <span style="color:var(--green)">▲</span></div>
+        <div class="chart-bars">
+            <div class="bar" style="height:60%"></div>
+            <div class="bar" style="height:80%"></div>
+            <div class="bar" style="height:40%"></div>
+            <div class="bar" style="height:95%"></div>
+            <div class="bar" style="height:70%"></div>
+        </div>
+    </div>
 
-    <input type="number" id="answer" placeholder="Escribe el resultado aquí...">
-    <button id="btnVenta">CERRAR VENTA</button>
+    <div id="main-terminal">
+        <div class="terminal-header">
+            <span>ID: APRENDIZ #001</span>
+            <span>RANGO: COLD CALLER</span>
+            <span id="timer" class="timer">TIEMPO LÍMITE: 02:00</span>
+        </div>
 
-    <div id="feedback"></div>
-</div>
+        <div class="briefing">
+            <h2>> NIVEL 1: THE COLD CALL</h2>
+            <p>CONVENCE AL <span class="highlight">SR. BELFORT SENIOR</span> DE INVERTIR SUS PRIMEROS <span class="highlight">$1,000,000</span>.</p>
+            <p>LA CUENTA PAGA EL <span class="highlight">1% SIMPLE MENSUAL</span>.</p>
+            <p>¿CUÁNTO RECIBIRÁ DE <span class="highlight">INTERÉS</span> TRAS <span class="highlight">8 MESES</span>?</p>
+            <p>NO METAS LA PATA. HAY BONO POR VELOCIDAD.</p>
+        </div>
 
-<script>
-    let timeLeft = 120;
-    const timerDisplay = document.getElementById('timer');
-    const btn = document.getElementById('btnVenta');
-    
-    // Cronómetro
-    const countdown = setInterval(() => {
-        timeLeft--;
-        let mins = Math.floor(timeLeft / 60);
-        let secs = timeLeft % 60;
-        timerDisplay.innerText = `TIEMPO: 0${mins}:${secs < 10 ? '0' : ''}${secs}`;
-        if (timeLeft <= 0) { clearInterval(countdown); timerDisplay.style.color = "red"; }
-    }, 1000);
+        <div class="action-zone">
+            <div class="input-group">
+                <span>$</span>
+                <input type="number" id="answer" placeholder="RESULTADO" autocomplete="off">
+            </div>
+            <button id="btnVenta">CERRAR VENTA</button>
+        </div>
 
-    // Lógica del botón (ahora más segura)
-    btn.onclick = function() {
-        const val = document.getElementById('answer').value;
-        const feedback = document.getElementById('feedback');
+        <div id="feedback"></div>
+    </div>
+
+    <div id="panel-futuros" class="panel">
+        <div class="panel-header">FUTUROS COMMODITIES</div>
+        <div>ORO (GC): 2,215.30 <span style="color:var(--green)">▲</span></div>
+        <div>PETRÓLEO (CL): 83.15 <span style="color:#ff4141">▼</span></div>
+        <div class="chart-line" style="height:60px; border-color:var(--gold); transform: scaleY(-1);"></div>
+        <div>PLATA (SI): 24.85 <span style="color:var(--green)">▲</span></div>
+    </div>
+
+    <div id="panel-opciones" class="panel">
+        <div class="panel-header">DERIVADOS / OPCIONES</div>
+        <div style="display:flex; gap:5px;">
+            <div style="flex:1; border:1px solid var(--green); padding:2px; text-align:center;">CALLS<br><span style="color:var(--green)">▲</span></div>
+            <div style="flex:1; border:1px solid #ff4141; padding:2px; text-align:center;">PUTS<br><span style="color:#ff4141">▼</span></div>
+        </div>
+        <div>AAPL 175 C: 3.45</div>
+        <div>TSLA 170 P: 5.10</div>
+        <div>NVDA 900 C: 22.80</div>
+        <div style="font-size:0.7rem; text-align:center;">VOLATILIDAD ALTA (VIX: 14.2)</div>
+    </div>
+
+    <div id="market-ticker">
+        <div class="ticker-content">
+            *** STRATTON OAKMONT MARKET FEED *** BTC/USD: 66,400 ▲ (+2.1%) *** TSLA: 168.30 ▼ (-1.5%) *** NVDA: 895.00 ▲ (+3.2%) *** MSFT: 420.10 ▲ (+0.8%) *** AMZN: 185.20 ▲ (+1.1%) *** CERRAR VENTAS AHORA ***
+        </div>
+    </div>
+
+    <script>
+        // --- LÓGICA DEL JUEGO (MANTENIDA Y REFORZADA) ---
+        let timeLeft = 120; // 2 minutos
+        const timerDisplay = document.getElementById('timer');
+        const btnVenta = document.getElementById('btnVenta');
+        const answerInput = document.getElementById('answer');
+        const feedbackDisplay = document.getElementById('feedback');
         
-        if (val == "80000") {
-            clearInterval(countdown);
-            feedback.innerHTML = `<span style="color:var(--gold)">¡TRATO CERRADO! $80,000 en comisiones. Has ganado el "Teléfono de Bronce".</span><br><br><button onclick="alert('Próximamente: Nivel 2')">IR AL NIVEL 2</button>`;
-        } else {
-            feedback.innerHTML = `<span style="color:red">ERROR. LA SEC TE ESTÁ VIGILANDO. REVISA EL CÁLCULO.</span>`;
-        }
-    };
-</script>
+        // Cronómetro
+        const countdown = setInterval(() => {
+            timeLeft--;
+            let mins = Math.floor(timeLeft / 60);
+            let secs = timeLeft % 60;
+            timerDisplay.innerText = `TIEMPO LÍMITE: 0${mins}:${secs < 10 ? '0' : ''}${secs}`;
+            if (timeLeft <= 30) { timerDisplay.style.color = "#ff4141"; } // Alerta
+            if (timeLeft <= 0) { clearInterval(countdown); timerDisplay.innerText = "¡BONO PERDIDO!"; }
+        }, 1000);
 
+        // Validación
+        btnVenta.onclick = function() {
+            if (answerInput.value === "80000") {
+                clearInterval(countdown);
+                let msg = "¡BOOM! ¡TRATO CERRADO! $80,000 EN COMISIONES.";
+                if (timeLeft > 0) msg += " GANASTE EL 'TELÉFONO DE BRONCE'.";
+                feedbackDisplay.innerHTML = `<span class="success-msg">${msg}</span><br><button style="background:transparent; border:1px solid var(--gold); color:var(--gold); padding:10px; margin-top:10px; cursor:pointer;" onclick="alert('Próximamente Nivel 2')">SIGUIENTE NIVEL</button>`;
+                answerInput.disabled = true; btnVenta.disabled = true; btnVenta.style.opacity = "0.5";
+            } else {
+                feedbackDisplay.innerHTML = `<span class="error-msg">¡MALDITA SEA, NOVATO! ESE CÁLCULO ESTÁ MAL.<br>REVISA TUS NÚMEROS O PERDEMOS EL TRATO.</span>`;
+            }
+        };
+
+        // Enter para enviar
+        answerInput.addEventListener("keypress", (e) => { if (e.key === "Enter") btnVenta.click(); });
+    </script>
 </body>
 </html>
